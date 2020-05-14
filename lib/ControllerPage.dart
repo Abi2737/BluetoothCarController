@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ControllerPage extends StatefulWidget {
   ControllerPage({Key key, this.title}) : super(key: key);
@@ -24,27 +25,69 @@ class _ControllerPageState extends State<ControllerPage> {
   // changed in this State, which causes it to rerun the build method below
   // so that the display can reflect the updated values.
 
+  double _leftRightValue;
+  double _upDownValue;
+
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+
+    _leftRightValue = 0;
+    _upDownValue = 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Page Controller',
-            ),
-          ],
-        ),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  min: -255,
+                  max: 255,
+                  value: _upDownValue,
+                  onChanged: onUpDownValueChanged,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Slider(
+                min: -255,
+                max: 255,
+                value: _leftRightValue,
+                onChanged: onLeftRightValueChange,
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+
+  void onLeftRightValueChange(double value) {
+    setState(() {
+      _leftRightValue = value;
+
+      print("lr: $_leftRightValue");
+    });
+  }
+
+  void onUpDownValueChanged(double value) {
+    _upDownValue = value;
+    print("ud: $_upDownValue");
+
+    setState(() {});
   }
 }
