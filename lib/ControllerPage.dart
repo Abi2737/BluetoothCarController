@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
+
+const double ZERO_MARGIN = 0.2;
 
 class ControllerPage extends StatefulWidget {
   ControllerPage({Key key, this.title}) : super(key: key);
@@ -43,50 +46,65 @@ class _ControllerPageState extends State<ControllerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RotatedBox(
-                quarterTurns: 3,
-                child: Slider(
-                  min: -255,
-                  max: 255,
-                  value: _upDownValue,
-                  onChanged: onUpDownValueChanged,
-                ),
-              ),
-            ],
+          // Acceleration / Deceleration
+          Expanded(
+            child: FlutterSlider(
+              values: [_upDownValue],
+              max: 1,
+              min: -1,
+              rtl: true,
+              step: FlutterSliderStep(step: 0.05),
+              centeredOrigin: true,
+              axis: Axis.vertical,
+              onDragging: onUpDownValueChanged,
+            ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Slider(
-                min: -255,
-                max: 255,
-                value: _leftRightValue,
-                onChanged: onLeftRightValueChange,
+
+          // Left / Right
+          Expanded(
+            child: FlutterSlider(
+              values: [_leftRightValue],
+              max: 1.0,
+              min: -1.0,
+              step: FlutterSliderStep(step: 0.05),
+              centeredOrigin: true,
+              axis: Axis.horizontal,
+              onDragging: onLeftRightValueChange,
+              hatchMark: FlutterSliderHatchMark(
+                density: 0.2, // means 20 lines, from 0 to 100 percent
+                displayLines: true,
+                labelsDistanceFromTrackBar: -75,
+                labels: [
+                  FlutterSliderHatchMarkLabel(percent: 0, label: Text('Left 100%')),
+                  FlutterSliderHatchMarkLabel(percent: 50, label: Text('Straight')),
+                  FlutterSliderHatchMarkLabel(percent: 100, label: Text('Right 100%')),
+                ],
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
 
+  dynamic onLeftRightValueChange(
+      int handlerIndex, dynamic lowerValue, dynamic upperValue) {
+    _leftRightValue = lowerValue;
 
-  void onLeftRightValueChange(double value) {
-    setState(() {
-      _leftRightValue = value;
+    if (_leftRightValue.abs() <= ZERO_MARGIN) {
+      print("asdasdasdasd");
+      _leftRightValue = 0;
+    }
 
-      print("lr: $_leftRightValue");
-    });
+    print("lr: $_leftRightValue");
+    setState(() {});
   }
 
-  void onUpDownValueChanged(double value) {
-    _upDownValue = value;
-    print("ud: $_upDownValue");
+  dynamic onUpDownValueChanged(
+      int handlerIndex, dynamic lowerValue, dynamic upperValue) {
+    _upDownValue = lowerValue;
+    print("ud: $_upDownValue, $upperValue");
 
     setState(() {});
   }
