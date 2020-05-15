@@ -104,6 +104,15 @@ class _ControllerPageState extends State<ControllerPage> {
     );
   }
 
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+  }
+
   dynamic onLeftRightValueChange(
       int handlerIndex, dynamic lowerValue, dynamic upperValue) {
     _leftRightValue = lowerValue;
