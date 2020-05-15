@@ -49,37 +49,53 @@ class _ControllerPageState extends State<ControllerPage> {
         children: [
           // Acceleration / Deceleration
           Expanded(
-            child: FlutterSlider(
-              values: [_upDownValue],
-              max: 1,
-              min: -1,
-              rtl: true,
-              step: FlutterSliderStep(step: 0.05),
-              centeredOrigin: true,
-              axis: Axis.vertical,
-              onDragging: onUpDownValueChanged,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: FlutterSlider(
+                values: [_upDownValue],
+                max: 1,
+                min: -1,
+                rtl: true,
+                step: FlutterSliderStep(step: 0.05),
+                centeredOrigin: true,
+                axis: Axis.vertical,
+                onDragging: onUpDownValueChanged,
+                hatchMark: FlutterSliderHatchMark(
+                  density: 0.2, // means 20 lines, from 0 to 100 percent
+                  displayLines: true,
+                  labelsDistanceFromTrackBar: 130,
+                  labels: [
+                    FlutterSliderHatchMarkLabel(percent: 0, label: Text('Down 100%')),
+                    FlutterSliderHatchMarkLabel(percent: 50, label: Text('0')),
+                    FlutterSliderHatchMarkLabel(percent: 100, label: Text('Up 100%')),
+                  ],
+                ),
+              ),
             ),
           ),
 
           // Left / Right
           Expanded(
-            child: FlutterSlider(
-              values: [_leftRightValue],
-              max: 1.0,
-              min: -1.0,
-              step: FlutterSliderStep(step: 0.05),
-              centeredOrigin: true,
-              axis: Axis.horizontal,
-              onDragging: onLeftRightValueChange,
-              hatchMark: FlutterSliderHatchMark(
-                density: 0.2, // means 20 lines, from 0 to 100 percent
-                displayLines: true,
-                labelsDistanceFromTrackBar: -75,
-                labels: [
-                  FlutterSliderHatchMarkLabel(percent: 0, label: Text('Left 100%')),
-                  FlutterSliderHatchMarkLabel(percent: 50, label: Text('Straight')),
-                  FlutterSliderHatchMarkLabel(percent: 100, label: Text('Right 100%')),
-                ],
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FlutterSlider(
+                values: [_leftRightValue],
+                max: 1.0,
+                min: -1.0,
+                step: FlutterSliderStep(step: 0.05),
+                centeredOrigin: true,
+                axis: Axis.horizontal,
+                onDragging: onLeftRightValueChange,
+                hatchMark: FlutterSliderHatchMark(
+                  density: 0.2, // means 20 lines, from 0 to 100 percent
+                  displayLines: true,
+                  labelsDistanceFromTrackBar: -75,
+                  labels: [
+                    FlutterSliderHatchMarkLabel(percent: 0, label: Text('Left 100%')),
+                    FlutterSliderHatchMarkLabel(percent: 50, label: Text('Straight')),
+                    FlutterSliderHatchMarkLabel(percent: 100, label: Text('Right 100%')),
+                  ],
+                ),
               ),
             ),
           ),
@@ -104,6 +120,11 @@ class _ControllerPageState extends State<ControllerPage> {
   dynamic onUpDownValueChanged(
       int handlerIndex, dynamic lowerValue, dynamic upperValue) {
     _upDownValue = lowerValue;
+
+    if (_upDownValue.abs() <= ZERO_MARGIN) {
+      _upDownValue = 0;
+    }
+
     print("ud: $_upDownValue, $upperValue");
 
     setState(() {});
