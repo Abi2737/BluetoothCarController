@@ -1,4 +1,4 @@
-import 'package:carcontroller/pages/Home.dart';
+import 'package:carcontroller/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/ControllerPage.dart';
@@ -21,11 +21,8 @@ class CarControllerApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-
-      routes: {
-        "/": (context) => HomePage(),
-        "/controller": (context) => ControllerPage()
-      },
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
