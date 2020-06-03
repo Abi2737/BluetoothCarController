@@ -22,6 +22,8 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               RaisedButton(
                 child: const Text('Controller'),
+                color: Colors.blue,
+                textColor: Colors.white,
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ControllerPage()));
