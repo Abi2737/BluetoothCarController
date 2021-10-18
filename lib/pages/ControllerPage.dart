@@ -1,3 +1,4 @@
+import 'package:carcontroller/utils/BluetoothCommunication.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +32,8 @@ class _ControllerPageState extends State<ControllerPage> {
   double _leftRightValue;
   double _upDownValue;
 
+  double _prevLeftRightValue;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +43,14 @@ class _ControllerPageState extends State<ControllerPage> {
 
     _leftRightValue = 0;
     _upDownValue = 0;
+
+    _prevLeftRightValue = -1;
+  }
+
+  void _refresh() {
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -82,7 +93,7 @@ class _ControllerPageState extends State<ControllerPage> {
                 values: [_leftRightValue],
                 max: 1.0,
                 min: -1.0,
-                step: FlutterSliderStep(step: 0.05),
+                step: FlutterSliderStep(step: 0.1),
                 centeredOrigin: true,
                 axis: Axis.horizontal,
                 onDragging: onLeftRightValueChange,
@@ -118,12 +129,20 @@ class _ControllerPageState extends State<ControllerPage> {
     _leftRightValue = lowerValue;
 
     if (_leftRightValue.abs() <= ZERO_MARGIN) {
-      print("asdasdasdasd");
       _leftRightValue = 0;
     }
 
     print("lr: $_leftRightValue");
-    setState(() {});
+
+    if (_leftRightValue != _prevLeftRightValue) {
+      String toSend = _leftRightValue.toString() + "s";
+      print("SEND: $toSend");
+      BluetoothCommunication.instance.sendData(toSend);
+
+      _prevLeftRightValue = _leftRightValue;
+    }
+
+    _refresh();
   }
 
   dynamic onUpDownValueChanged(
@@ -135,7 +154,7 @@ class _ControllerPageState extends State<ControllerPage> {
     }
 
     print("ud: $_upDownValue, $upperValue");
-
-    setState(() {});
+//    BluetoothCommunication.instance.sendData(_upDownValue.toString());
+    _refresh();
   }
 }

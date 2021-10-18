@@ -14,6 +14,7 @@ class BluetoothCommunication {
   BluetoothDevice _device;
   BluetoothDeviceState _state;
   List<BluetoothService> _services;
+  List<BluetoothCharacteristic> _writeCharacteristics = List();
 
   StreamController _onNewDeviceController = new StreamController.broadcast();
 
@@ -35,15 +36,19 @@ class BluetoothCommunication {
     _device.discoverServices().then((services) {
       _services = services;
 
-      _findNotifyingCharacteristics();
+      _findWriteAndNotifyingCharacteristics();
     });
 
     _onNewDeviceController.add(_device);
   }
 
-  void _findNotifyingCharacteristics() {
+  void _findWriteAndNotifyingCharacteristics() {
     _services.forEach((service) {
       service.characteristics.forEach((c) async {
+        if (c.properties.write) {
+          _writeCharacteristics.add(c);
+        }
+
         if (c.properties.notify) {
           c.value.listen((newValue) {
             _onNewValueController.add(newValue);
@@ -76,18 +81,15 @@ class BluetoothCommunication {
 
     // write encodedData to all the characteristics that have write option
     // not sure if it's a good approach
-    _services.forEach((service) {
-      service.characteristics.forEach((c) {
-        if (c.properties.write) {
-          try {
-            c
-                .write(encodedData, withoutResponse: true)
-                .catchError((error) => print("Write Error: $error"));
-          } catch (e) {
-            print(e);
-          }
+    _writeCharacteristics.forEach(
+      (c) {
+        try {
+          c.write(encodedData, withoutResponse: true);
+        } catch (e) {
+          _writeCharacteristics.remove(c);
+          print(e);
         }
-      });
-    });
+      },
+    );
   }
 }
